@@ -1,0 +1,19 @@
+# Core Django requirements
+Django==5.1.2
+djangorestframework==3.14.0
+django-cors-headers==3.13.0
+
+# Database driver
+
+psycopg2==2.7.4
+
+# Other dependencies
+pillow==9.4.0
+django-filter==22.1
+django-crispy-forms==1.14.0
+django-allauth==0.52.0
+django-widget-tweaks==1.4.12
+celery==5.2.7
+redis==4.4.0
+stripe==5.0.0
+django-anymail[mailgun]==8.6

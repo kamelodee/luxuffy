@@ -1,0 +1,26 @@
+.header-middle,.dropdown{
+   background-color: #12224d !important;
+   color: #fff;
+  
+
+}
+.header-bottom,.category-toggle,.footer-top{
+   background-color: #0c1733 !important;
+   color: #fff;
+  
+  
+
+}
+.header-search {
+    color: #fff !important;
+}
+.header-middle{
+    font-size: 0.5rem;
+    border-bottom: 1px solid #eee;
+    padding: 1.2rem 0 0 0 !important;
+    border: none;
+}
+.btn-search1{
+    background:#eb7404 !important;
+    
+}
