@@ -15,7 +15,8 @@ django-allauth==0.52.0
 google ==3.0.0
 django-widget-tweaks==1.4.12
 celery==5.2.7
-redis==4.4.0
+redis>=4.5.3
+channels-redis==4.1.0
 stripe==5.0.0
 django-anymail[mailgun]==8.6
 django-htmx ==1.21.0
@@ -26,7 +27,6 @@ google-auth==2.25.2
 google-auth-oauthlib==1.2.0
 # Video Streaming and Real-time Communication
 channels==4.0.0
-channels-redis==4.1.0
 django-storages==1.14.2
 opencv-python-headless==4.8.1.78
 
