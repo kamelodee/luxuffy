@@ -1,0 +1,299 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Luxuffy Settings{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    <div class="pb-5">
+    <div class="col-md-8 col-lg-8 col-sm-12">
+      <a href="{%url 'vendor_store' vendor.store_name %}">Preview store</a>
+
+        <div class="card theme-wizard mb-5" data-theme-wizard="data-theme-wizard">
+          <div class="card-header bg-body-highlight pt-3 pb-2 border-bottom-0">
+            <ul class="nav justify-content-between nav-wizard nav-wizard-success" role="tablist">
+              <li class="nav-item" role="presentation"><a class="nav-link active fw-semibold" href="#bootstrap-wizard-validation-tab1" data-bs-toggle="tab" data-wizard-step="1" aria-selected="true" role="tab">
+                  <div class="text-center d-inline-block"><span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="fas fa-shopping-bag"></i><!-- <span class="fas fa-lock"></span> Font Awesome fontawesome.com --></span></span><span class="d-none d-md-block mt-1 fs-9">Store Infomation</span></div>
+                </a></li>
+              <li class="nav-item" role="presentation"><a class="nav-link fw-semibold" href="#bootstrap-wizard-validation-tab2" data-bs-toggle="tab" data-wizard-step="2" aria-selected="false" tabindex="-1" role="tab">
+                  <div class="text-center d-inline-block"><span class="nav-item-circle-parent"><span class="nav-item-circle"><svg class="svg-inline--fa fa-user" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path></svg><!-- <span class="fas fa-user"></span> Font Awesome fontawesome.com --></span></span><span class="d-none d-md-block mt-1 fs-9">Business information</span></div>
+                </a></li>
+             
+              <li class="nav-item" role="presentation"><a class="nav-link fw-semibold" href="#bootstrap-wizard-validation-tab3" data-bs-toggle="tab" data-wizard-step="3" aria-selected="false" tabindex="-1" role="tab">
+                  <div class="text-center d-inline-block"><span class="nav-item-circle-parent"><span class="nav-item-circle"><svg class="svg-inline--fa fa-file-lines" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="file-lines" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" data-fa-i2svg=""><path fill="currentColor" d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM112 256H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16z"></path></svg><!-- <span class="fas fa-file-alt"></span> Font Awesome fontawesome.com --></span></span><span class="d-none d-md-block mt-1 fs-9">Shipping Information</span></div>
+                </a>
+              </li>
+                <li class="nav-item" role="presentation"><a class="nav-link fw-semibold" href="#bootstrap-wizard-validation-tab4" data-bs-toggle="tab" data-wizard-step="4" aria-selected="false" tabindex="-1" role="tab">
+                  <div class="text-center d-inline-block"><span class="nav-item-circle-parent"><span class="nav-item-circle">
+                    <i class="fas fa-credit-card"></i></span></span><span class="d-none d-md-block mt-1 fs-9">Payment information</span></div>
+                </a>
+              </li>
+              <li class="nav-item" role="presentation"><a class="nav-link fw-semibold" href="#bootstrap-wizard-validation-tab5" data-bs-toggle="tab" data-wizard-step="5" aria-selected="false" tabindex="-1" role="tab">
+                  <div class="text-center d-inline-block"><span class="nav-item-circle-parent"><span class="nav-item-circle"><svg class="svg-inline--fa fa-check" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"></path></svg><!-- <span class="fas fa-check"></span> Font Awesome fontawesome.com --></span></span><span class="d-none d-md-block mt-1 fs-9">Done</span></div>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body pt-4 pb-0">
+            <div class="tab-content">
+              <div class="tab-pane active" role="tabpanel" aria-labelledby="bootstrap-wizard-validation-tab1" id="bootstrap-wizard-validation-tab1">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                  <div class="mb-2"><label class="form-label text-body" for="bootstrap-wizard-validation-wizard-name">Business Name</label>
+                    <input class="form-control" type="text" name="business_name" value="{{vendor.business_name}}" placeholder="Business name" required="required" id="bootstrap-wizard-validation-wizard-name">
+                    <div class="invalid-feedback">Please Your Business name.</div>
+                  </div>
+                  <div class="mb-2"><label class="form-label text-body" for="bootstrap-wizard-validation-wizard-name">Business Type</label>
+                    <select class="form-select" aria-label="Default select example" name="business_type">
+                      <option selected="" value="{{vendor.business_type}}">{{vendor.business_type}}</option>
+                      <option value="1">Individual</option>
+                      <option value="2">Company</option>
+               
+                    </select>
+                    <div class="invalid-feedback">Select your Business type.</div>
+                  </div>
+                  <div class="mb-2"><label class="form-label text-body" for="bootstrap-wizard-validation-wizard-name">Store Name</label>
+                    <input class="form-control" type="text" value="{{vendor.store_name}}" name="store_name" placeholder="Store name" required="required" id="bootstrap-wizard-validation-wizard-name">
+                    <div class="invalid-feedback">Please choose a Store name.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="customFileSm">Phone Number</label>
+                    <input class="form-control form-control-sm" value="{{vendor.phone_number}}" id="" type="text" name="phone_number" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="customFileSm">Phone Number 2</label>
+                    <input value="{{vendor.phone_number2}}" class="form-control form-control-sm" id="phone_number2" type="text" name="phone_number2" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="customFileSm">Email</label>
+                    <input value="{{vendor.email}}" class="form-control form-control-sm" id="email" type="text" name="email" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="customFileSm">Your logo</label>
+                    <input class="form-control form-control-sm" id="customFileSm" type="file" name="logo" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="customFileSm">Banner image</label>
+                    <input class="form-control form-control-sm" id="customFileSm" type="file" name="banner" />
+                  </div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="terms" required="required" checked="checked" id="bootstrap-wizard-validation-wizard-checkbox"><label class="form-check-label text-body" for="bootstrap-wizard-validation-wizard-checkbox">I accept the <a href="#!">terms </a>and <a href="#!">privacy policy</a></label></div>
+                  <button class="btn btn-primary mt-3" type="submit">Update</button>
+                </form>
+              </div>
+    
+              <div class="tab-pane" role="tabpanel" aria-labelledby="bootstrap-wizard-validation-tab2" id="bootstrap-wizard-validation-tab2">
+                <form method="post" enctype="multipart/form-data" >
+                    {% csrf_token %}
+                  <div class="mb-2"><label class="form-label text-body" for="bootstrap-wizard-validation-wizard-name">Your full name</label>
+                    <input class="form-control" type="text" value="{{vendor.full_name}}" name="full_name" placeholder="Business name" required="required" id="bootstrap-wizard-validation-wizard-name">
+                    <div class="invalid-feedback">Please Your full name.</div>
+                  </div>
+                  <div class="mb-2"><label class="form-label" for="bootstrap-wizard-validation-gender">ID type</label>
+                    <select class="form-select" name="id_type" id="bootstrap-wizard-validation-gender" required="required">
+                      <option value="{{vendor.id_type}}">{{vendor.id_type}}</option>
+                      <option value="ghana_card">Ghana card</option>
+                      <option value="voter_id">Voter ID</option>
+                      <option value="pasport">Passport</option>
+                    </select>
+                    <div class="invalid-feedback">This field is required.</div>
+                  </div>
+                  <div class="row">
+                  <div class="col-md-6 col-lg-6 col-sm-12">
+                    <div class="mb-2"><label class="form-label text-body" for="bootstrap-wizard-validation-wizard-name">ID Number</label>
+                      <input class="form-control" value="{{vendor.id_number}}" type="text" name="id_number" placeholder="Business name" required="required" >
+                      <div class="invalid-feedback">Please Your ID number.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="customFileSm">ID Front Image</label>
+                      <input class="form-control form-control-sm" name="id_front" id="customFileSm" type="file" />
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label" for="customFileSm">ID Back Image</label>
+                      <input class="form-control form-control-sm" name="id_back"  id="customFileSm" type="file" />
+                    </div>
+                    <div class="mb-2"><label class="form-label" >Locality</label>
+                      <input class="form-control" value="{{vendor.locality}}" name="locality" type="text" placeholder="Locality" required="required" >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="mb-2"><label class="form-label" >Region</label>
+                      <input class="form-control " name="region" value="{{vendor.region}}" type="text" placeholder="Region"  required="required"  >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-lg-6 col-sm-12">
+    
+                    <div class="mb-2"><label class="form-label" >Tax Identification Number (TIN)</label>
+                      <input class="form-control" type="text" name="tin_number" value="{{vendor.tin_number}}" placeholder="Tax Identification Number (TIN)"  required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="mb-2"><label class="form-label" >Addres 1</label>
+                      <input class="form-control " type="text" value="{{vendor.address_line1}}" name="address_line1" placeholder="Address1" data-options="" required="required"  >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="mb-2"><label class="form-label" >Addres 2</label>
+                      <input class="form-control " type="text" value="{{vendor.address_line2}}" name="address_line2" placeholder="Address1" data-options="" required="required" >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="mb-2"><label class="form-label" >City</label>
+                      <input class="form-control" type="text" name="city" value="{{vendor.city}}" placeholder="City" data-options="" required="required"  >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    
+                    <div class="mb-2"><label class="form-label" >Country</label>
+                      <input class="form-control " type="text" value="{{vendor.country}}" placeholder="Country" name="country" data-options="" required="required"  >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    
+                  </div>
+    
+                  </div>  
+                  <button class="btn btn-primary mt-3" type="submit">Update</button>
+                    
+                </form>
+              </div>
+              <div class="tab-pane" role="tabpanel" aria-labelledby="bootstrap-wizard-validation-tab3" id="bootstrap-wizard-validation-tab3">
+                <form method="post">
+                    {% csrf_token %}
+                  <div class="row gx-3 gy-2">
+                    <h1>Shipping Information</h1>
+                      <p>Please provide the address from where you prefer to ship your products </p>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input"  type="checkbox" />
+                        <label class="form-check-label" >Make it Same as Business Address</label>
+                      </div>
+                    <div class="col-6"><label class="form-label" for="bootstrap-wizard-validation-card-number">Address 1</label>
+                      <input class="form-control" placeholder="Ship from Address 1" name="ship_from_address1" value="{{vendor.ship_from_address1}}"  type="text" required="required" >
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" >Address 2</label>
+                      <input class="form-control" placeholder="Address 2"  name="ship_from_address2" value="{{vendor.ship_from_address2}}" type="text"  required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" >
+                      City / Town</label>
+                      <input class="form-control" placeholder="City/Town" name="ship_from_city" value="{{vendor.ship_from_city}}" type="text"  required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" >
+                      region / State</label>
+                      <input class="form-control" placeholder="region/State" name="ship_from_region" type="text" value="{{vendor.ship_from_region}}" required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" >Country</label>
+                      <select class="form-select" name="ship_from_country"  required="required">
+                        <option value="{{vendor.ship_from_country}}">{{vendor.ship_from_country}}</option>
+                      
+                        <option value="Ghana">Ghana</option>
+                     
+                      </select>
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+    
+                    
+                  </div>
+    
+    
+                  <div class="row gx-3 gy-2">
+                    <h1>Return Address</h1>
+                      <p>Please provide the return address</p>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input"  type="checkbox" />
+                        <label class="form-check-label" >Make it Same as Business Address</label>
+                      </div>
+                    <div class="col-6"><label class="form-label" >Address 1</label>
+                      <input class="form-control" placeholder="return Address 1" type="text" required="required" name="return_address1" value="{{vendor.return_address1}}">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" for="bootstrap-wizard-validation-card-name">Address 2</label>
+                      <input class="form-control" placeholder="Address 2" value={{vendor.return_address2}} name="return_address2" type="text"  required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" >
+                      City / Town</label>
+                      <input class="form-control" placeholder="City/Town" name="return_city" type="text" value="{{vendor.return_city}}" required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label">
+                      region / State</label>
+                      <input class="form-control" placeholder="region/State" name="return_region" value="{{vendor.return_region}}" type="text"  required="required">
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="col-6"><label class="form-label" for="bootstrap-wizard-validation-card-holder-country">Country</label>
+                      <select class="form-select" name="return_country" required="required">
+                        <option value="{{vendor.return_country}}">{{vendor.return_country}}</option>
+                        
+                          
+                        <option value="Ghana">Ghana</option>
+                       
+                       
+                      </select>
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+    
+                    
+                  </div>
+    
+               <button class="btn btn-primary mt-3" type="submit">Update</button>
+                </form>
+              </div>
+              <div class="tab-pane" role="tabpanel" aria-labelledby="bootstrap-wizard-validation-tab4" id="bootstrap-wizard-validation-tab4">
+                <div class="row flex-center pb-8 pt-4 gx-3 gy-4">
+                  <div class="col-12 col-sm-auto">
+                    <div class="text-center text-sm-start"><img class="d-dark-none" src="../../assets/img/spot-illustrations/38.webp" alt="" width="220"><img class="d-light-none" src="../../assets/img/spot-illustrations/dark_38.webp" alt="" width="220"></div>
+                  </div>
+                  <form method="post">
+                    {% csrf_token %}
+            
+                  <div class="col-12 col-sm-auto">
+                    
+                    <div class="mb-2"><label class="form-label" >Payment Type</label>
+                      <select class="form-select" name="payment_type"  required="required">
+                        <option value="{{vendor.payment_type}}">{{vendor.payment_type}}</option>
+                        <option value="bank">Bank</option>
+                        <option value="mobile_money">Mobile money</option>
+                        
+                      </select>
+                      <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                    <div class="mb-2"><label class="form-label text-body">Momo/bank</label>
+                      <input class="form-control" type="text" name="account_number" value="{{vendor.account_number}}" placeholder="bank account number" required="required" >
+                      <div class="invalid-feedback">Please Your .</div>
+                    </div>
+                    <div class="mb-2"><label class="form-label text-body">Momo/bank</label>
+                      <input class="form-control" type="text" name="mobile_money_number" value="{{vendor.mobile_money_number}}" placeholder="Mobile money number" required="required" >
+                      <div class="invalid-feedback">Please Your .</div>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary mt-3" type="submit">Update</button>
+                </form>
+
+                </div>
+              </div>
+              <div class="tab-pane" role="tabpanel" aria-labelledby="bootstrap-wizard-validation-tab5" id="bootstrap-wizard-validation-tab5">
+                <div class="row flex-center pb-8 pt-4 gx-3 gy-4">
+                  <div class="col-12 col-sm-auto">
+                    <div class="text-center text-sm-start"><img class="d-dark-none" src="../../assets/img/spot-illustrations/38.webp" alt="" width="220"><img class="d-light-none" src="../../assets/img/spot-illustrations/dark_38.webp" alt="" width="220"></div>
+                  </div>
+                  <div class="col-12 col-sm-auto">
+                    <div class="text-center text-sm-start">
+                      <h5 class="mb-3">You are all set!</h5>
+                      <p class="text-body-emphasis fs-9">Now you can access your account<br>anytime anywhere</p><a class="btn btn-primary px-6" href="{%url 'setting'%}">Start Over</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+            </div>
+          </div>
+          <div class="card-footer border-top-0" data-wizard-footer="data-wizard-footer">
+            <div class="d-flex pager wizard list-inline mb-0"><button class="d-none btn btn-link ps-0" type="button" data-wizard-prev-btn="data-wizard-prev-btn"><svg class="svg-inline--fa fa-chevron-left me-1" data-fa-transform="shrink-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="" style="transform-origin: 0.3125em 0.5em;"><g transform="translate(160 256)"><g transform="translate(0, 0)  scale(0.8125, 0.8125)  rotate(0 0 0)"><path fill="currentColor" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" transform="translate(-160 -256)"></path></g></g></svg><!-- <span class="fas fa-chevron-left me-1" data-fa-transform="shrink-3"></span> Font Awesome fontawesome.com -->Previous</button>
+              <div class="flex-1 text-end"><button class="btn btn-primary px-6 px-sm-6" type="submit" data-wizard-next-btn="data-wizard-next-btn">Next<svg class="svg-inline--fa fa-chevron-right ms-1" data-fa-transform="shrink-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="" style="transform-origin: 0.3125em 0.5em;"><g transform="translate(160 256)"><g transform="translate(0, 0)  scale(0.8125, 0.8125)  rotate(0 0 0)"><path fill="currentColor" d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" transform="translate(-160 -256)"></path></g></g></svg><!-- <span class="fas fa-chevron-right ms-1" data-fa-transform="shrink-3"> </span> Font Awesome fontawesome.com --></button></div>
+            </div>
+          </div>
+        </div>
+        </div>
+      
+</div>
+</div>
+
+{% endblock %}

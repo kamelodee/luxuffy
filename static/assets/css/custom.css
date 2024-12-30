@@ -7,6 +7,7 @@
 .header-bottom,.category-toggle,.footer-top{
    background-color: #0c1733 !important;
    color: #fff;
+   padding: auto;
   
   
 
@@ -21,6 +22,13 @@
     border: none;
 }
 .btn-search1{
-    background:#eb7404 !important;
+    background:#ec7a5c !important;
     
 }
+.btn-primary{
+    background:#ec7a5c !important;
+    border-color: #ec7a5c!important;
+    color: #fff ;
+    font-weight: 700;
+}
+

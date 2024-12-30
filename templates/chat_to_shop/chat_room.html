@@ -1,0 +1,323 @@
+{% extends 'chat_to_shop/base_chat.html' %}
+{% load static %}
+
+{% block chat_title %}Chat Room: {{ room_name }}{% endblock %}
+
+{% block chat_content %}
+<div class="chat-interface">
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-actions">
+                <button class="btn btn-outline-primary btn-sm" id="view-orders-btn">
+                    <i class="fas fa-box"></i> View Orders
+                </button>
+            </div>
+        </div>
+        <div class="chat-messages">
+            <div class="message ai-message">
+                Hello! I'm your Luxuffy shopping assistant. How can I help you today?
+            </div>
+        </div>
+        <div class="typing-indicator">AI is typing...</div>
+        <div class="chat-input">
+            <input type="text" id="chat-message-input" placeholder="Type your message...">
+            <button id="chat-message-submit">Send</button>
+        </div>
+    </div>
+    <div class="product-display">
+        <div class="product-cards"></div>
+    </div>
+</div>
+
+<!-- Product Action Modal -->
+<div class="modal fade" id="productActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add to Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="product-details"></div>
+                <div class="quantity-selector mt-3">
+                    <label>Quantity:</label>
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary quantity-minus">-</button>
+                        <input type="number" class="form-control quantity-input" value="1" min="1">
+                        <button class="btn btn-outline-secondary quantity-plus">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary add-to-cart-btn">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Tracking Modal -->
+<div class="modal fade" id="orderTrackingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your Orders</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="order-filters mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" data-filter="all">All Orders</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="processing">Processing</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="shipped">Shipped</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="delivered">Delivered</button>
+                    </div>
+                </div>
+                <div class="orders-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block chat_js %}
+<script>
+    const roomName = {{ room_name|safe }};
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/room/' + roomName + '/'
+    );
+
+    let selectedProduct = null;
+    const productActionModal = new bootstrap.Modal(document.getElementById('productActionModal'));
+    const orderTrackingModal = new bootstrap.Modal(document.getElementById('orderTrackingModal'));
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        hideTypingIndicator();
+        
+        if (data.type === 'cart_update') {
+            if (data.success) {
+                showToast('Success', data.message);
+                productActionModal.hide();
+                updateCartTotal(data.cart_total);
+            } else {
+                showToast('Error', data.message);
+            }
+            return;
+        }
+
+        if (data.type === 'order_update') {
+            handleOrderUpdate(data);
+            return;
+        }
+        
+        appendMessage(data.message, data.sender);
+        
+        if (data.products && data.products.length > 0) {
+            displayProducts(data.products);
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    function displayProducts(products) {
+        const productCards = document.querySelector('.product-cards');
+        productCards.innerHTML = '';
+        
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="${product.image || '/static/assets/images/placeholder.jpg'}" alt="${product.name}">
+                </div>
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <p class="price">$${product.price}</p>
+                    <p class="description">${product.description.substring(0, 100)}...</p>
+                    <div class="product-meta">
+                        <span class="category">${product.category}</span>
+                        <span class="rating">★ ${product.rating}</span>
+                    </div>
+                    <button class="btn btn-primary buy-now" data-product='${JSON.stringify(product)}'>Buy Now</button>
+                </div>
+            `;
+            productCards.appendChild(card);
+        });
+
+        document.querySelectorAll('.buy-now').forEach(button => {
+            button.addEventListener('click', function() {
+                selectedProduct = JSON.parse(this.dataset.product);
+                showProductActionModal(selectedProduct);
+            });
+        });
+    }
+
+    function showProductActionModal(product) {
+        const modalBody = document.querySelector('#productActionModal .product-details');
+        modalBody.innerHTML = `
+            <h4>${product.name}</h4>
+            <p class="price">$${product.price}</p>
+            ${product.variants && product.variants.length > 0 ? `
+                <div class="variants mt-3">
+                    <label>Select Variant:</label>
+                    <select class="form-select variant-select">
+                        ${product.variants.map(v => `
+                            <option value="${v.size}-${v.color}">
+                                ${v.size} - ${v.color} ($${v.price})
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+            ` : ''}
+        `;
+        productActionModal.show();
+    }
+
+    function handleOrderUpdate(data) {
+        if (data.orders) {
+            displayOrders(data.orders);
+        }
+        if (data.message) {
+            showToast('Order Update', data.message);
+        }
+    }
+
+    function displayOrders(orders) {
+        const ordersList = document.querySelector('.orders-list');
+        ordersList.innerHTML = orders.map(order => `
+            <div class="order-card" data-status="${order.status.toLowerCase()}">
+                <div class="order-header">
+                    <h6>Order #${order.order_number}</h6>
+                    <span class="order-date">${order.order_date}</span>
+                </div>
+                <div class="order-status">
+                    <div class="status-timeline">
+                        <div class="status-line" style="width: ${getOrderProgress(order.status)}%"></div>
+                        <div class="status-points">
+                            <div class="status-point ${order.status === 'Processing' ? 'active' : ''}" data-status="Processing">
+                                <span class="status-label">Processing</span>
+                            </div>
+                            <div class="status-point ${order.status === 'Shipped' ? 'active' : ''}" data-status="Shipped">
+                                <span class="status-label">Shipped</span>
+                            </div>
+                            <div class="status-point ${order.status === 'Delivered' ? 'active' : ''}" data-status="Delivered">
+                                <span class="status-label">Delivered</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-items">
+                    ${order.items.map(item => `
+                        <div class="order-item">
+                            <img src="${item.image || '/static/assets/images/placeholder.jpg'}" alt="${item.name}">
+                            <div class="item-details">
+                                <h6>${item.name}</h6>
+                                <p>Quantity: ${item.quantity}</p>
+                                <p class="price">$${item.price}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">Total: $${order.total}</div>
+                    <button class="btn btn-outline-primary btn-sm track-order" data-order-id="${order.order_number}">
+                        Track Order
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.track-order').forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.dataset.orderId;
+                chatSocket.send(JSON.stringify({
+                    'type': 'track_order',
+                    'order_id': orderId
+                }));
+            });
+        });
+    }
+
+    function getOrderProgress(status) {
+        switch(status.toLowerCase()) {
+            case 'processing': return 33;
+            case 'shipped': return 66;
+            case 'delivered': return 100;
+            default: return 0;
+        }
+    }
+
+    document.querySelectorAll('.order-filters .btn').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.order-filters .btn').forEach(btn => 
+                btn.classList.remove('active'));
+            this.classList.add('active');
+
+            const filter = this.dataset.filter;
+            document.querySelectorAll('.order-card').forEach(card => {
+                if (filter === 'all' || card.dataset.status === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    document.getElementById('view-orders-btn').addEventListener('click', function() {
+        chatSocket.send(JSON.stringify({
+            'type': 'get_orders'
+        }));
+        orderTrackingModal.show();
+    });
+
+    document.querySelector('.quantity-plus').addEventListener('click', function() {
+        const input = document.querySelector('.quantity-input');
+        input.value = parseInt(input.value) + 1;
+    });
+
+    document.querySelector('.quantity-minus').addEventListener('click', function() {
+        const input = document.querySelector('.quantity-input');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    });
+
+    document.querySelector('.add-to-cart-btn').addEventListener('click', function() {
+        if (!selectedProduct) return;
+        
+        const quantity = parseInt(document.querySelector('.quantity-input').value);
+        const variant = document.querySelector('.variant-select')?.value;
+        
+        chatSocket.send(JSON.stringify({
+            'type': 'add_to_cart',
+            'product_id': selectedProduct.id,
+            'quantity': quantity,
+            'variant': variant
+        }));
+    });
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.key === 'Enter') {
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        if (message.trim()) {
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            appendMessage(message, 'User');
+            showTypingIndicator();
+            messageInputDom.value = '';
+        }
+    };
+</script>
+{% endblock %}

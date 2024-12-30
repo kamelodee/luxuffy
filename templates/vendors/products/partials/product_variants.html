@@ -1,0 +1,80 @@
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+<div class="product-variants mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Product Variants</h5>
+        <div>
+            <button class="btn btn-sm btn-primary"
+                hx-get="{% url 'vendor_product_variant_form' product.pk %}"
+                hx-target="#new-variant-form"
+                hx-swap="beforeend">
+                <i class="fas fa-plus"></i> Add Variant
+            </button>
+        </div>
+    </div>
+    <div class="row" id="variants-container">
+        {% for variant in product.variants.all %}
+        <div class="variant-item mb-3" id="variant-{{ variant.pk }}">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="card-subtitle text-muted">Variant #{{ forloop.counter }}</h6>
+                        <button type="button" 
+                                class="btn btn-outline-danger btn-sm"
+                                hx-delete="{% url 'product_variant_delete' product_id=product.pk pk=variant.pk %}"
+                                hx-target="#variant-{{ variant.pk }}"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" value="{{ variant.name }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>SKU</label>
+                                <input type="text" class="form-control" value="{{ variant.sku }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input type="text" class="form-control" value="{{ variant.price }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if variant.variant_image %}
+                                <img src="{{ variant.variant_image.url }}" alt="{{ variant.name }}" class="img-thumbnail" style="max-height: 100px;">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-primary"
+                                hx-get="{% url 'vendor_product_variant_edit' variant.pk %}"
+                                hx-target="#variant-{{ variant.pk }}"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No variants added yet. Click the "Add Variant" button to create your first variant.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="new-variant-form">
+        <!-- New variant forms will be added here -->
+    </div>
+</div>

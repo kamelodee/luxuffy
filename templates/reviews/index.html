@@ -1,0 +1,13 @@
+<h1>Reviews</h1>
+<ul>
+    {% for review in reviews %}
+    <li>
+        <strong>{{ review.title }}</strong> - {{ review.comment }} (Rating: {{ review.rating }})
+        <p>By {{ review.user.username }} on {{ review.created_at }}</p>
+    </li>
+    {% empty %}
+    <li>No reviews available.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'add_review' content_type=content_type object_id=object_id %}">Add a Review</a>

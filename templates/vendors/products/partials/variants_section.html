@@ -1,0 +1,35 @@
+{% load crispy_forms_tags %}
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Product Variants</h5>
+        
+        <div id="variants-list">
+            {% for variant_data in variants %}
+                <div class="variant-form mb-4" id="variant-{{ variant_data.variant.id }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="card-subtitle text-muted">Variant #{{ forloop.counter }}</h6>
+                                <button class="btn btn-danger btn-sm"
+                                        hx-delete="{% url 'delete_variant' variant_data.variant.id %}"
+                                        hx-target="#variant-{{ variant_data.variant.id }}"
+                                        hx-swap="outerHTML">
+                                    Remove
+                                </button>
+                            </div>
+                            {% crispy variant_data.form %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button class="btn btn-secondary mt-3"
+                hx-get="{% url 'add_variant' product.id %}"
+                hx-target="#variants-list"
+                hx-swap="beforeend">
+            Add Variant
+        </button>
+    </div>
+</div>

@@ -1,0 +1,101 @@
+{% if show_variants %}
+<!-- Variants Section -->
+<div id="variant-forms" class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Product Variants</h5>
+    </div>
+    <div class="card-body">
+        {{ variant_formset.management_form }}
+        <div id="variant-formset">
+            {% for variant_form in variant_formset %}
+                <div class="variant-form mb-4">
+                    <!-- Basic Variant Info -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.name.id_for_label }}" class="form-label">Variant Name</label>
+                                {{ variant_form.name }}
+                                {% if variant_form.name.help_text %}
+                                    <small class="form-text text-muted">{{ variant_form.name.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.sku.id_for_label }}" class="form-label">SKU</label>
+                                {{ variant_form.sku }}
+                                {% if variant_form.sku.help_text %}
+                                    <small class="form-text text-muted">{{ variant_form.sku.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing and Stock -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.price.id_for_label }}" class="form-label">Price</label>
+                                {{ variant_form.price }}
+                                {% if variant_form.price.help_text %}
+                                    <small class="form-text text-muted">{{ variant_form.price.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.stock_quantity.id_for_label }}" class="form-label">Stock</label>
+                                {{ variant_form.stock_quantity }}
+                                {% if variant_form.stock_quantity.help_text %}
+                                    <small class="form-text text-muted">{{ variant_form.stock_quantity.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Variant Attributes -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.size.id_for_label }}" class="form-label">Size</label>
+                                {{ variant_form.size }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.color.id_for_label }}" class="form-label">Color</label>
+                                {{ variant_form.color }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.material.id_for_label }}" class="form-label">Material</label>
+                                {{ variant_form.material }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Physical Properties -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.weight.id_for_label }}" class="form-label">Weight</label>
+                                {{ variant_form.weight }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ variant_form.dimensions.id_for_label }}" class="form-label">Dimensions</label>
+                                {{ variant_form.dimensions }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-danger btn-sm remove-variant">Remove Variant</button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-primary" id="add-variant">Add Variant</button>
+    </div>
+</div>
+{% endif %}

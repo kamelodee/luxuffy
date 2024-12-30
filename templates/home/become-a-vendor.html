@@ -1,7 +1,15 @@
 {% extends "base.html" %}
-
-
 {% load static %}
+{% block descriptionds %}
+<meta name="description" content="Brief description of the page (150–160 characters), including keywords.">
+   {% endblock %}
+{% block keywords %}
+   <meta name="keywords" content="luxuffy, shiping, luxuffy Ghana">
+   {% endblock %}
+
+<title>{% block title %}product detail{% endblock %}</title>
+
+
 {% block content %}
 
  <!-- Start of Page Header -->
@@ -34,16 +42,9 @@
                 </figure>
             </div>
             <div class="col-md-6 order-md-first">
-                <h4 class="text-primary font-weight-bold ls-25">Create a Store</h4>
-                <h2 class="title text-left">Build your online store on Luxuffy</h2>
-                <p>
-                    Create your online store on Luxuffy, Ghana's premier marketplace,
-                     and tap into a wide audience looking for quality products. Luxuffy offers everything you need to start and grow your business,
-                      from customizable storefronts to secure payment solutions and streamlined order management. With Luxuffy, you can list your products easily, attract more customers, and benefit from a user-friendly,
-                     Amazon-like shopping experience tailored for Ghana.
-                      Join Luxuffy today and elevate your business online!
-                </p>
-                <a href="#" class="btn btn-dark btn-outline btn-rounded ls-25">Learn More</a>
+                <h1 class="title text-left ">Sell with Luxuffy</h1>
+                <h1 class=" seller-title">Join Luxuffy.com to expand your reach and sell smarter with AI</h1>
+                <a href="{%url 'vendor_create'%}" class="btn btn-primary btn-outline text-white btn-rounded ls-25 ">Become a seller</a>
             </div>
         </div>
         <!-- End of Row -->

@@ -1,0 +1,38 @@
+{% extends 'chat_to_shop/base_chat.html' %}
+
+{% block chat_title %}Welcome to Chat to Shop{% endblock %}
+
+{% block chat_content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Start Shopping with AI Assistance</h5>
+        <p class="card-text">
+            Chat with our AI shopping assistant to find the perfect products for you. 
+            Our assistant can help you with:
+        </p>
+        <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item">Product recommendations based on your preferences</li>
+            <li class="list-group-item">Answering questions about products and categories</li>
+            <li class="list-group-item">Comparing different products</li>
+            <li class="list-group-item">Finding the best deals</li>
+        </ul>
+        
+        <form id="start-chat-form" class="mb-3">
+            <div class="input-group">
+                <input type="text" id="room-name" class="form-control" placeholder="Enter a room name">
+                <button class="btn btn-primary" type="submit">Start Chat</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block chat_js %}
+<script>
+    document.querySelector('#start-chat-form').onsubmit = function(e) {
+        e.preventDefault();
+        let roomName = document.querySelector('#room-name').value;
+        window.location.pathname = '/chat/room/' + roomName + '/';
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .chat-interface {
+        display: flex;
+        gap: 20px;
+        height: 80vh;
+    }
+
+    .chat-container {
+        flex: 1;
+        height: 100%;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 15px;
+        max-width: 70%;
+    }
+    
+    .user-message {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+    }
+    
+    .ai-message {
+        background-color: #e9ecef;
+        color: #212529;
+    }
+    
+    .chat-input {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        background-color: white;
+        border-radius: 10px;
+        margin-top: auto;
+    }
+    
+    .chat-input input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+    
+    .chat-input button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .chat-input button:hover {
+        background-color: #0056b3;
+    }
+    
+    .typing-indicator {
+        display: none;
+        padding: 10px;
+        color: #6c757d;
+    }
+
+    .product-display {
+        width: 400px;
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .product-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 15px;
+    }
+
+    .product-info h3 {
+        margin: 0 0 10px;
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    .product-info .price {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #007bff;
+        margin: 5px 0;
+    }
+
+    .product-info .description {
+        font-size: 0.9em;
+        color: #666;
+        margin: 10px 0;
+    }
+
+    .product-meta {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .product-meta .category {
+        background: #f8f9fa;
+        padding: 3px 8px;
+        border-radius: 12px;
+    }
+
+    .product-meta .rating {
+        color: #ffc107;
+    }
+
+    .buy-now {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #eee;
+        padding: 15px 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .quantity-selector {
+        max-width: 200px;
+    }
+
+    .quantity-input {
+        text-align: center;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin-bottom: 10px;
+        min-width: 250px;
+    }
+
+    .toast-header {
+        border-bottom: 1px solid #eee;
+        padding: 10px 15px;
+    }
+
+    .toast-body {
+        padding: 10px 15px;
+    }
+
+    /* Chat Header */
+    .chat-header {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+    }
+
+    .chat-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Order Tracking Styles */
+    .order-card {
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .order-header {
+        padding: 15px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-header h6 {
+        margin: 0;
+        color: #333;
+    }
+
+    .order-date {
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .order-status {
+        padding: 20px 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .status-timeline {
+        position: relative;
+        height: 50px;
+    }
+
+    .status-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 2px;
+        background: #007bff;
+        transition: width 0.3s ease;
+    }
+
+    .status-points {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .status-point {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .status-point.active {
+        border-color: #007bff;
+        background: #007bff;
+    }
+
+    .status-label {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 0.8em;
+        color: #666;
+    }
+
+    .status-point.active .status-label {
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .order-items {
+        padding: 15px;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .order-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    .item-details {
+        flex-grow: 1;
+    }
+
+    .item-details h6 {
+        margin: 0 0 5px;
+        color: #333;
+    }
+
+    .item-details p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .order-footer {
+        padding: 15px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-total {
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Modal Adjustments for Order Tracking */
+    .modal-lg {
+        max-width: 800px;
+    }
+
+    .order-filters {
+        display: flex;
+        justify-content: center;
+    }
+
+    .order-filters .btn-group {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .order-filters .btn {
+        border: none;
+        padding: 8px 20px;
+        font-size: 0.9em;
+    }
+
+    .order-filters .btn.active {
+        background: #007bff;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">{% block chat_title %}Chat to Shop{% endblock %}</h2>
+            {% block chat_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function scrollToBottom() {
+        const chatMessages = document.querySelector('.chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const indicator = document.querySelector('.typing-indicator');
+        if (indicator) {
+            indicator.style.display = 'block';
+        }
+    }
+
+    function hideTypingIndicator() {
+        const indicator = document.querySelector('.typing-indicator');
+        if (indicator) {
+            indicator.style.display = 'none';
+        }
+    }
+
+    function appendMessage(message, sender) {
+        const chatMessages = document.querySelector('.chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender === 'User' ? 'user-message' : 'ai-message'}`;
+        messageDiv.textContent = message;
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    function createToast(title, message, type = 'info') {
+        const toastContainer = document.querySelector('.toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="toast-header">
+                <strong class="me-auto">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+        toastContainer.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Remove toast after it's hidden
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }
+</script>
+{% block chat_js %}{% endblock %}
+{% endblock %}

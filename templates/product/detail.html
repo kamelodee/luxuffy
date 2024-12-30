@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
+{% block descriptionds %}
+<meta name="description" content="Brief description of the page (150–160 characters), including keywords.">
+   {% endblock %}
+{% block keywords %}
+   <meta name="keywords" content="luxuffy, shiping, luxuffy Ghana">
+   {% endblock %}
 {% block content %}
-
+<title>{% block title %}product detail{% endblock %}</title>
  <!-- Start of Breadcrumb -->
  <nav class="breadcrumb-nav container">
     <ul class="breadcrumb bb-no">

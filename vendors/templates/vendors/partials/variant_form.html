@@ -1,0 +1,16 @@
+{% load crispy_forms_tags %}
+
+<div class="variant-form mb-3 border-bottom pb-3" id="variant-{{ forloop.counter0|default:0 }}">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6>Variant #{{ forloop.counter|default:1 }}</h6>
+        <button type="button" 
+                class="btn btn-outline-danger btn-sm"
+                hx-delete="{% url 'delete_variant' variant.id %}"
+                hx-target="#variant-{{ forloop.counter0|default:0 }}"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this variant?">
+            <i class="fas fa-times"></i> Remove
+        </button>
+    </div>
+    {% crispy variant_form %}
+</div>

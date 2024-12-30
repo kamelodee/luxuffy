@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-image {
+        max-height: 400px;
+        object-fit: contain;
+    }
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    .thumbnail.active {
+        border-color: #007bff;
+    }
+    .spec-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    .variant-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .variant-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <img src="{{ product.image.url }}" class="img-fluid product-image mb-3" id="main-image" alt="{{ product.name }}">
+                    <div class="d-flex gap-2 overflow-auto">
+                        <img src="{{ product.image.url }}" class="thumbnail active" onclick="changeImage(this.src)" alt="{{ product.name }}">
+                        {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" class="thumbnail" onclick="changeImage(this.src)" alt="{{ product.name }}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h1 class="h2 mb-3">{{ product.name }}</h1>
+                        <div>
+                            <a href="{% url 'vendor_product_update' product.pk %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'vendor_product_delete' product.pk %}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-3">
+                        Category: {{ product.category.name }} |
+                        {% if product.brand %}Brand: {{ product.brand.name }} |{% endif %}
+                        SKU: {{ product.sku }}
+                    </p>
+
+                    <div class="mb-3">
+                        <h4 class="mb-2">Price</h4>
+                        <h3 class="text-primary mb-0">₵{{ product.price }}</h3>
+                        {% if product.discount_price %}
+                        <small class="text-muted text-decoration-line-through">₵{{ product.discount_price }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <h4 class="mb-2">Stock Status</h4>
+                        <p class="mb-1">
+                            <span class="badge {% if product.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ product.is_active|yesno:"Active,Inactive" }}
+                            </span>
+                            {% if product.is_featured %}
+                            <span class="badge bg-info">Featured</span>
+                            {% endif %}
+                        </p>
+                        <p class="mb-0">Stock Quantity: {{ product.stock_quantity }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h4 class="mb-2">Description</h4>
+                        <p>{{ product.description }}</p>
+                    </div>
+
+                    {% if product.video %}
+                    <div class="mb-3">
+                        <h4 class="mb-2">Product Video</h4>
+                        <div class="ratio ratio-16x9">
+                            <iframe src="{{ product.video }}" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Variants -->
+    {% if product.variants.exists %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="card-title mb-0">Product Variants</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for variant in product.variants.all %}
+                <div class="col-md-4">
+                    <div class="variant-card">
+                        {% if variant.variant_image %}
+                        <img src="{{ variant.variant_image.url }}" class="variant-image mb-3" alt="Variant {{ variant.size }} {{ variant.color }}">
+                        {% endif %}
+                        <h5>{{ variant.size }} - {{ variant.color }}</h5>
+                        <p class="mb-1">Price: ₵{{ variant.price }}</p>
+                        <p class="mb-0">Stock: {{ variant.stock_quantity }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Product Specifications -->
+    {% if product.specifications.exists %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3 class="card-title mb-0">Specifications</h3>
+        </div>
+        <div class="card-body">
+            <table class="table spec-table">
+                <tbody>
+                    {% for spec in product.specifications.all %}
+                    <tr>
+                        <th style="width: 30%">{{ spec.specification_name }}</th>
+                        <td>{{ spec.specification_value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function changeImage(src) {
+        document.getElementById('main-image').src = src;
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.classList.remove('active');
+            if (thumb.src === src) {
+                thumb.classList.add('active');
+            }
+        });
+    }
+</script>
+{% endblock %}

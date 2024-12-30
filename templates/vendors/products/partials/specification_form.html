@@ -1,0 +1,25 @@
+{% load crispy_forms_tags %}
+
+<div class="card mb-3" id="specification-form-{{ form.instance.pk|default:'new' }}">
+    <div class="card-body">
+        <form hx-post="{% if form.instance.pk %}{% url 'vendor_product_specification_edit' form.instance.pk %}{% else %}{% url 'vendor_product_specification_create' product.pk %}{% endif %}"
+              hx-target="#specification-form-{{ form.instance.pk|default:'new' }}"
+              hx-swap="outerHTML"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {% crispy form %}
+            <div class="text-end mt-3">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            onclick="this.closest('.card').remove()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

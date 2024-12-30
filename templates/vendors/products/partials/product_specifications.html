@@ -1,0 +1,67 @@
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+<div class="product-specifications mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Product Specifications</h5>
+        <div>
+            <button class="btn btn-sm btn-primary"
+                hx-get="{% url 'vendor_product_specification_form' product.pk %}"
+                hx-target="#new-specification-form"
+                hx-swap="beforeend">
+                <i class="fas fa-plus"></i> Add Specification
+            </button>
+        </div>
+    </div>
+    <div class="row" id="specifications-container">
+        {% for spec in product.specifications.all %}
+        <div class="spec-item mb-3" id="spec-{{ spec.id }}">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="card-subtitle text-muted">Specification #{{ forloop.counter }}</h6>
+                        <button type="button" 
+                                class="btn btn-outline-danger btn-sm"
+                                hx-delete="{% url 'product_specification_delete' product_id=product.id pk=spec.id %}"
+                                hx-target="#spec-{{ spec.id }}"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" value="{{ spec.specification_name }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Value</label>
+                                <input type="text" class="form-control" value="{{ spec.specification_value }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-primary"
+                                hx-get="{% url 'vendor_product_specification_edit' spec.pk %}"
+                                hx-target="#spec-{{ spec.id }}"
+                                hx-swap="outerHTML">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No specifications added yet. Click the "Add Specification" button to create your first specification.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="new-specification-form">
+        <!-- New specification forms will be added here -->
+    </div>
+</div>

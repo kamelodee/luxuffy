@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/video_shop.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.css">
+{% endblock %}
+
+{% block content %}
+<div class="video-shop-container">
+    <!-- Video Feed Section -->
+    <div class="video-feed">
+        <div class="video-player-container">
+            <video id="player" playsinline controls>
+                <source src="" type="video/mp4">
+            </video>
+            
+            <!-- Product Overlay -->
+            <div class="product-overlay">
+                <div class="product-tags"></div>
+            </div>
+            
+            <!-- Video Controls -->
+            <div class="video-controls">
+                <button class="btn-previous" title="Previous Video">
+                    <i class="fas fa-backward"></i>
+                </button>
+                <button class="btn-next" title="Next Video">
+                    <i class="fas fa-forward"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Product Showcase -->
+        <div class="product-showcase">
+            <h3>Featured Products</h3>
+            <div class="product-list"></div>
+        </div>
+    </div>
+    
+    <!-- Live Streams Section -->
+    <div class="live-streams-section">
+        <h2>Live Now</h2>
+        <div class="live-streams-grid">
+            <!-- Live stream cards will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<!-- Product Quick View Modal -->
+<div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="product-details"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary add-to-cart">Add to Cart</button>
+                <button type="button" class="btn btn-success buy-now">Buy Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Go Live Modal for Vendors -->
+<div class="modal fade" id="goLiveModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Start Live Stream</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="streamForm">
+                    <div class="mb-3">
+                        <label class="form-label">Stream Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Featured Products</label>
+                        <select class="form-select" name="products" multiple>
+                            <!-- Products will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Stream Settings</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="enableChat">
+                            <label class="form-check-label">Enable Chat</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="enableQA">
+                            <label class="form-check-label">Enable Q&A</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary start-stream">Start Stream</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
+<script>
+    // Initialize video player
+    const player = new Plyr('#player', {
+        controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
+    });
+
+    // WebSocket setup for live features
+    const videoSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/video_shop/'
+    );
+
+    videoSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        handleSocketMessage(data);
+    };
+
+    function handleSocketMessage(data) {
+        switch(data.type) {
+            case 'new_video':
+                loadVideo(data.video);
+                break;
+            case 'product_update':
+                updateProducts(data.products);
+                break;
+            case 'live_stream_update':
+                updateLiveStreams(data.streams);
+                break;
+            case 'stream_interaction':
+                handleStreamInteraction(data);
+                break;
+        }
+    }
+
+    function loadVideo(video) {
+        player.source = {
+            type: 'video',
+            sources: [{
+                src: video.url,
+                type: 'video/mp4'
+            }]
+        };
+        
+        // Update product tags
+        updateProductTags(video.products);
+    }
+
+    function updateProductTags(products) {
+        const tagsContainer = document.querySelector('.product-tags');
+        tagsContainer.innerHTML = products.map(product => `
+            <div class="product-tag" style="left: ${product.position.x}%; top: ${product.position.y}%"
+                 data-product-id="${product.id}">
+                <div class="tag-dot"></div>
+                <div class="tag-content">
+                    <h4>${product.name}</h4>
+                    <p class="price">$${product.price}</p>
+                    <button class="btn btn-sm btn-primary view-product">View</button>
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers
+        document.querySelectorAll('.view-product').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.closest('.product-tag').dataset.productId;
+                showProductDetails(productId);
+            });
+        });
+    }
+
+    function updateProducts(products) {
+        const productList = document.querySelector('.product-list');
+        productList.innerHTML = products.map(product => `
+            <div class="product-card" data-product-id="${product.id}">
+                <img src="${product.image}" alt="${product.name}">
+                <div class="product-info">
+                    <h4>${product.name}</h4>
+                    <p class="price">$${product.price}</p>
+                    <div class="product-actions">
+                        <button class="btn btn-sm btn-primary add-to-cart">Add to Cart</button>
+                        <button class="btn btn-sm btn-outline-primary save-for-later">Save</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateLiveStreams(streams) {
+        const streamsGrid = document.querySelector('.live-streams-grid');
+        streamsGrid.innerHTML = streams.map(stream => `
+            <div class="stream-card" data-stream-id="${stream.id}">
+                <div class="stream-preview">
+                    <img src="${stream.thumbnail}" alt="${stream.title}">
+                    <span class="live-badge">LIVE</span>
+                    <span class="viewer-count">
+                        <i class="fas fa-eye"></i> ${stream.viewers}
+                    </span>
+                </div>
+                <div class="stream-info">
+                    <h4>${stream.title}</h4>
+                    <p class="streamer">${stream.vendor_name}</p>
+                    <p class="stream-meta">
+                        <span class="category">${stream.category}</span>
+                        <span class="duration">${stream.duration}</span>
+                    </p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showProductDetails(productId) {
+        // Request product details via WebSocket
+        videoSocket.send(JSON.stringify({
+            'type': 'get_product_details',
+            'product_id': productId
+        }));
+    }
+
+    // Vendor streaming functionality
+    const startStreamBtn = document.querySelector('.start-stream');
+    if (startStreamBtn) {
+        startStreamBtn.addEventListener('click', function() {
+            const formData = new FormData(document.getElementById('streamForm'));
+            videoSocket.send(JSON.stringify({
+                'type': 'start_stream',
+                'stream_data': Object.fromEntries(formData)
+            }));
+        });
+    }
+
+    // Initialize video controls
+    document.querySelector('.btn-next').addEventListener('click', () => {
+        videoSocket.send(JSON.stringify({ 'type': 'request_next_video' }));
+    });
+
+    document.querySelector('.btn-previous').addEventListener('click', () => {
+        videoSocket.send(JSON.stringify({ 'type': 'request_previous_video' }));
+    });
+
+    // Product interaction handlers
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-to-cart')) {
+            const productId = e.target.closest('[data-product-id]').dataset.productId;
+            videoSocket.send(JSON.stringify({
+                'type': 'add_to_cart',
+                'product_id': productId
+            }));
+        } else if (e.target.classList.contains('save-for-later')) {
+            const productId = e.target.closest('[data-product-id]').dataset.productId;
+            videoSocket.send(JSON.stringify({
+                'type': 'save_for_later',
+                'product_id': productId
+            }));
+        }
+    });
+</script>
+{% endblock %}

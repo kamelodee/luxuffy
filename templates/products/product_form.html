@@ -1,0 +1,234 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="pb-5">
+
+
+
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">{{ title }}</h1>
+    
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Please correct the errors below.</strong>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+        
+        <!-- Product Type Selection -->
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Product Type
+            </label>
+            {{ form.product_type }}
+        </div>
+        
+        <!-- Basic Information -->
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 class="text-xl font-semibold mb-4">Basic Information</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Name
+                    </label>
+                    {{ form.name }}
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Category
+                    </label>
+                    {{ form.category }}
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Brand
+                    </label>
+                    {{ form.brand }}
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Status
+                    </label>
+                    {{ form.status }}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Description
+                </label>
+                {{ form.description }}
+            </div>
+        </div>
+        
+        <!-- Pricing -->
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 class="text-xl font-semibold mb-4">Pricing</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Price
+                    </label>
+                    {{ form.price }}
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Compare at Price
+                    </label>
+                    {{ form.compare_at_price }}
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Discount Price
+                    </label>
+                    {{ form.discount_price }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Images -->
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 class="text-xl font-semibold mb-4">Images</h2>
+            {{ image_formset.management_form }}
+            
+            <div id="image-formset">
+                {% for image_form in image_formset %}
+                <div class="image-form mb-4">
+                    {{ image_form.as_p }}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="button" id="add-image" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Add Image
+            </button>
+        </div>
+        
+        <!-- Specifications -->
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 specification-section">
+            <h2 class="text-xl font-semibold mb-4">Specifications</h2>
+            {{ spec_formset.management_form }}
+            
+            <div id="spec-formset">
+                {% for spec_form in spec_formset %}
+                <div class="spec-form mb-4">
+                    {{ spec_form.as_p }}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="button" id="add-spec" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Add Specification
+            </button>
+        </div>
+        
+        <!-- Variants (shown only for variable products) -->
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 variant-section" style="display: none;">
+            <h2 class="text-xl font-semibold mb-4">Variants</h2>
+            {{ variant_formset.management_form }}
+            
+            <div id="variant-formset">
+                {% for variant_form in variant_formset %}
+                <div class="variant-form mb-4">
+                    {{ variant_form.as_p }}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="button" id="add-variant" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Add Variant
+            </button>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end">
+            <button type="submit" class="bg-green-500 text-white px-6 py-3 rounded font-bold">
+                Save Product
+            </button>
+        </div>
+    </form>
+</div>
+
+
+</div>
+</div>
+
+{% block extra_js %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+<script>
+  Dropzone.options.productImageDropzone = {
+    paramName: 'file', // The name that will be used to transfer the file
+    maxFilesize: 5, // Maximum file size in MB
+    acceptedFiles: 'image/*', // Only accept image files
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token in headers
+    },
+    init: function() {
+      this.on("success", function(file, response) {
+        console.log("Image uploaded:", response);
+      });
+      this.on("error", function(file, response) {
+        console.error("Image upload error:", response);
+      });
+    }
+  };
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show/hide variant section based on product type
+    const productTypeSelect = document.querySelector('.product-type-select');
+    const variantSection = document.querySelector('.variant-section');
+    
+    function toggleVariantSection() {
+        if (productTypeSelect.value === 'variable') {
+            variantSection.style.display = 'block';
+        } else {
+            variantSection.style.display = 'none';
+        }
+    }
+    
+    productTypeSelect.addEventListener('change', toggleVariantSection);
+    toggleVariantSection();
+    
+    // Handle dynamic formsets
+    function setupFormsetButtons(addButtonId, formsetPrefix) {
+        const addButton = document.getElementById(addButtonId);
+        const formset = document.getElementById(`${formsetPrefix}-formset`);
+        const totalForms = document.getElementById(`id_${formsetPrefix}-TOTAL_FORMS`);
+        
+        addButton.addEventListener('click', function() {
+            const forms = formset.getElementsByClassName(`${formsetPrefix}-form`);
+            const newForm = forms[0].cloneNode(true);
+            const formNum = forms.length;
+            
+            newForm.innerHTML = newForm.innerHTML.replace(
+                new RegExp(`${formsetPrefix}-0-`, 'g'),
+                `${formsetPrefix}-${formNum}-`
+            );
+            
+            formset.appendChild(newForm);
+            totalForms.value = formNum + 1;
+        });
+    }
+    
+    setupFormsetButtons('add-image', 'image');
+    setupFormsetButtons('add-spec', 'spec');
+    setupFormsetButtons('add-variant', 'variant');
+});
+</script>
+{% endblock %}
+{% endblock %}

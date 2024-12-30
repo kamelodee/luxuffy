@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+
+<div class="mb-4 mt-4">
+    <h5>Product Variants</h5>
+    <div id="variants-container">
+        {% if variants %}
+            {% for variant in variants %}
+                {% include "vendors/partials/variant_form.html" with variant_form=variant.form variant=variant %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    <button type="button" 
+            class="btn btn-outline-primary mt-3"
+            hx-get="{% url 'add_variant' product.id %}"
+            hx-target="#variants-container"
+            hx-swap="beforeend">
+        <i class="fas fa-plus"></i> Add Variant
+    </button>
+</div>

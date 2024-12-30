@@ -1,0 +1,335 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Product{% endblock %}
+
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Product</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="product-form" id="product-form">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Left Column - Main Product Info -->
+                        <div class="col-md-8">
+                            <!-- Basic Info Card -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Basic Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.name.id_for_label }}" class="form-label">Product Name</label>
+                                                <input type="text" 
+                                                       name="{{ form.name.name }}" 
+                                                       id="{{ form.name.id_for_label }}" 
+                                                       class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                                       value="{{ form.name.value|default:'' }}"
+                                                       required>
+                                                {% if form.name.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.name.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.slug.id_for_label }}" class="form-label">Slug</label>
+                                                <input type="text" 
+                                                       name="{{ form.slug.name }}" 
+                                                       id="{{ form.slug.id_for_label }}" 
+                                                       class="form-control {% if form.slug.errors %}is-invalid{% endif %}"
+                                                       value="{{ form.slug.value|default:'' }}"
+                                                       placeholder="auto-generated-if-empty">
+                                                {% if form.slug.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.slug.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.sku.id_for_label }}" class="form-label">SKU</label>
+                                                <input type="text" 
+                                                       name="{{ form.sku.name }}" 
+                                                       id="{{ form.sku.id_for_label }}" 
+                                                       class="form-control {% if form.sku.errors %}is-invalid{% endif %}"
+                                                       value="{{ form.sku.value|default:'' }}">
+                                                {% if form.sku.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.sku.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                                                <select name="{{ form.category.name }}" 
+                                                        id="{{ form.category.id_for_label }}" 
+                                                        class="form-select select2 {% if form.category.errors %}is-invalid{% endif %}"
+                                                        required>
+                                                    <option value="">Select a category</option>
+                                                    {% for choice in form.category.field.choices %}
+                                                        <option value="{{ choice.0 }}" {% if form.category.value|stringformat:"s" == choice.0|stringformat:"s" %}selected{% endif %}>
+                                                            {{ choice.1 }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% if form.category.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.category.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.brand.id_for_label }}" class="form-label">Brand</label>
+                                                <select name="{{ form.brand.name }}" 
+                                                        id="{{ form.brand.id_for_label }}" 
+                                                        class="form-select select2 {% if form.brand.errors %}is-invalid{% endif %}">
+                                                    <option value="">Select a brand</option>
+                                                    {% for choice in form.brand.field.choices %}
+                                                        <option value="{{ choice.0 }}" {% if form.brand.value|stringformat:"s" == choice.0|stringformat:"s" %}selected{% endif %}>
+                                                            {{ choice.1 }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% if form.brand.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.brand.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.product_type.id_for_label }}" class="form-label">Product Type</label>
+                                                <select name="{{ form.product_type.name }}" 
+                                                        id="product-type-select" 
+                                                        class="form-select select2 {% if form.product_type.errors %}is-invalid{% endif %}"
+                                                        required>
+                                                    {% for choice in form.product_type.field.choices %}
+                                                        <option value="{{ choice.0 }}" {% if form.product_type.value == choice.0 %}selected{% endif %}>
+                                                            {{ choice.1 }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% if form.product_type.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.product_type.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                        <textarea name="{{ form.description.name }}" 
+                                                  id="{{ form.description.id_for_label }}" 
+                                                  class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                                  rows="4">{{ form.description.value|default:'' }}</textarea>
+                                        {% if form.description.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ form.description.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing Card -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Pricing & Inventory</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.price.id_for_label }}" class="form-label">Price</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           name="{{ form.price.name }}" 
+                                                           id="{{ form.price.id_for_label }}" 
+                                                           class="form-control {% if form.price.errors %}is-invalid{% endif %}"
+                                                           value="{{ form.price.value|default:'' }}"
+                                                           required>
+                                                    {% if form.price.errors %}
+                                                        <div class="invalid-feedback">
+                                                            {{ form.price.errors|join:", " }}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.compare_at_price.id_for_label }}" class="form-label">Compare at Price</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           name="{{ form.compare_at_price.name }}" 
+                                                           id="{{ form.compare_at_price.id_for_label }}" 
+                                                           class="form-control {% if form.compare_at_price.errors %}is-invalid{% endif %}"
+                                                           value="{{ form.compare_at_price.value|default:'' }}">
+                                                    {% if form.compare_at_price.errors %}
+                                                        <div class="invalid-feedback">
+                                                            {{ form.compare_at_price.errors|join:", " }}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.stock_quantity.id_for_label }}" class="form-label">Stock Quantity</label>
+                                                <input type="number" 
+                                                       name="{{ form.stock_quantity.name }}" 
+                                                       id="{{ form.stock_quantity.id_for_label }}" 
+                                                       class="form-control {% if form.stock_quantity.errors %}is-invalid{% endif %}"
+                                                       value="{{ form.stock_quantity.value|default:'' }}"
+                                                       required>
+                                                {% if form.stock_quantity.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.stock_quantity.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                                                <select name="{{ form.status.name }}" 
+                                                        id="{{ form.status.id_for_label }}" 
+                                                        class="form-select {% if form.status.errors %}is-invalid{% endif %}"
+                                                        required>
+                                                    {% for choice in form.status.field.choices %}
+                                                        <option value="{{ choice.0 }}" {% if form.status.value == choice.0 %}selected{% endif %}>
+                                                            {{ choice.1 }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% if form.status.errors %}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.status.errors|join:", " }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Variants Section -->
+                            <div id="variant-forms" class="card mb-4" style="display: none;">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Product Variants</h5>
+                                </div>
+                                <div class="card-body">
+                                    {{ variant_formset.management_form }}
+                                    <div id="variant-formset">
+                                        {% for variant_form in variant_formset %}
+                                            <div class="variant-form mb-4">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="{{ variant_form.option.id_for_label }}" class="form-label">Option</label>
+                                                            {{ variant_form.option }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="{{ variant_form.value.id_for_label }}" class="form-label">Value</label>
+                                                            {{ variant_form.value }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="{{ variant_form.price_adjustment.id_for_label }}" class="form-label">Price Adjustment</label>
+                                                            {{ variant_form.price_adjustment }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="{{ variant_form.stock.id_for_label }}" class="form-label">Stock</label>
+                                                            {{ variant_form.stock }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-danger btn-sm remove-variant">Remove Variant</button>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="add-variant">Add Variant</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Images & Media -->
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Product Image</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="{{ form.image.id_for_label }}" class="form-label">Main Image</label>
+                                        <input type="file" 
+                                               name="{{ form.image.name }}" 
+                                               id="{{ form.image.id_for_label }}" 
+                                               class="form-control"
+                                               accept="image/*"
+                                               {% if form.image.value %}data-initial="{{ form.image.value.url }}"{% endif %}>
+                                        {% if form.image.value %}
+                                        <div class="mt-2">
+                                            <img src="{{ form.image.value.url }}" alt="Current image" class="img-thumbnail" style="max-width: 200px;">
+                                        </div>
+                                        {% endif %}
+                                        {% if form.image.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.image.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        {% if form.instance.pk %}Update{% else %}Create{% endif %} Product
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

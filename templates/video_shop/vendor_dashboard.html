@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/video_shop.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="vendor-dashboard">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <h1>Vendor Dashboard</h1>
+        <div class="header-actions">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadVideoModal">
+                <i class="fas fa-upload"></i> Upload Video
+            </button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#goLiveModal">
+                <i class="fas fa-video"></i> Go Live
+            </button>
+        </div>
+    </div>
+
+    <!-- Analytics Overview -->
+    <div class="analytics-overview">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h3>Total Views</h3>
+                    <div class="stat-value">{{ analytics.total_views }}</div>
+                    <div class="stat-label">All Time</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h3>Average Duration</h3>
+                    <div class="stat-value">{{ analytics.avg_duration }}s</div>
+                    <div class="stat-label">Per Video</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <div class="stat-value">${{ analytics.total_revenue }}</div>
+                    <div class="stat-label">All Time</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h3>Average Viewers</h3>
+                    <div class="stat-value">{{ analytics.avg_viewers }}</div>
+                    <div class="stat-label">Per Stream</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Performance -->
+    <div class="recent-performance">
+        <h2>Recent Performance (Last 30 Days)</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <canvas id="performanceChart"></canvas>
+            </div>
+            <div class="col-md-4">
+                <div class="performance-stats">
+                    <div class="stat-item">
+                        <label>Revenue</label>
+                        <span>${{ recent_performance.revenue }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Views</label>
+                        <span>{{ recent_performance.views }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Avg. Watch Time</label>
+                        <span>{{ recent_performance.avg_watch_time }}s</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Management -->
+    <div class="content-management">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#videos">Videos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#streams">Past Streams</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Videos Tab -->
+            <div class="tab-pane fade show active" id="videos">
+                <div class="video-grid">
+                    {% for video in videos %}
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            {% if video.thumbnail %}
+                            <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}">
+                            {% else %}
+                            <div class="placeholder-thumbnail">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            {% endif %}
+                            <span class="duration">{{ video.duration }}s</span>
+                        </div>
+                        <div class="video-info">
+                            <h4>{{ video.title }}</h4>
+                            <p class="views">{{ video.view_count }} views</p>
+                            <p class="products">{{ video.product_count }} products</p>
+                            <div class="video-actions">
+                                <button class="btn btn-sm btn-outline-primary edit-video" data-video-id="{{ video.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-video" data-video-id="{{ video.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Streams Tab -->
+            <div class="tab-pane fade" id="streams">
+                <div class="stream-list">
+                    {% for stream in past_streams %}
+                    <div class="stream-card">
+                        <div class="stream-info">
+                            <h4>{{ stream.title }}</h4>
+                            <p class="stream-meta">
+                                <span class="date">{{ stream.ended_at|date:"M d, Y" }}</span>
+                                <span class="duration">{{ stream.duration }} minutes</span>
+                            </p>
+                        </div>
+                        <div class="stream-stats">
+                            <div class="stat">
+                                <label>Peak Viewers</label>
+                                <span>{{ stream.analytics.peak_viewers }}</span>
+                            </div>
+                            <div class="stat">
+                                <label>Total Views</label>
+                                <span>{{ stream.analytics.total_views }}</span>
+                            </div>
+                            <div class="stat">
+                                <label>Revenue</label>
+                                <span>${{ stream.analytics.revenue }}</span>
+                            </div>
+                        </div>
+                        <div class="stream-actions">
+                            <button class="btn btn-sm btn-primary view-analytics" data-stream-id="{{ stream.id }}">
+                                View Analytics
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Video Modal -->
+<div class="modal fade" id="uploadVideoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="videoUploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Video File</label>
+                        <input type="file" class="form-control" name="video" accept="video/*" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Thumbnail</label>
+                        <input type="file" class="form-control" name="thumbnail" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category">
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Tags</label>
+                        <div id="productTags" class="product-tags">
+                            <!-- Product tags will be added here dynamically -->
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addProductTag">
+                            Add Product Tag
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="uploadVideo">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stream Analytics Modal -->
+<div class="modal fade" id="streamAnalyticsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Stream Analytics</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="stream-analytics-content">
+                    <!-- Analytics content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+    // Initialize performance chart
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['30d', '25d', '20d', '15d', '10d', '5d', 'Now'],
+            datasets: [{
+                label: 'Views',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Handle video upload
+    document.getElementById('uploadVideo').addEventListener('click', function() {
+        const form = document.getElementById('videoUploadForm');
+        const formData = new FormData(form);
+        
+        fetch('/video-shop/upload/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Upload failed: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Upload failed');
+        });
+    });
+
+    // Handle stream analytics view
+    document.querySelectorAll('.view-analytics').forEach(button => {
+        button.addEventListener('click', function() {
+            const streamId = this.dataset.streamId;
+            fetch(`/video-shop/stream/${streamId}/analytics/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayStreamAnalytics(data.analytics);
+                        $('#streamAnalyticsModal').modal('show');
+                    } else {
+                        alert('Failed to load analytics: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load analytics');
+                });
+        });
+    });
+
+    function displayStreamAnalytics(analytics) {
+        const content = document.querySelector('.stream-analytics-content');
+        content.innerHTML = `
+            <div class="analytics-grid">
+                <div class="analytics-item">
+                    <h4>Peak Viewers</h4>
+                    <span>${analytics.peak_viewers}</span>
+                </div>
+                <div class="analytics-item">
+                    <h4>Total Views</h4>
+                    <span>${analytics.total_views}</span>
+                </div>
+                <div class="analytics-item">
+                    <h4>Average Watch Time</h4>
+                    <span>${analytics.average_watch_time}s</span>
+                </div>
+                <div class="analytics-item">
+                    <h4>Engagement Rate</h4>
+                    <span>${analytics.engagement_rate}%</span>
+                </div>
+                <div class="analytics-item">
+                    <h4>Revenue</h4>
+                    <span>$${analytics.revenue}</span>
+                </div>
+            </div>
+            <div class="product-clicks">
+                <h4>Product Interactions</h4>
+                <div class="product-clicks-list">
+                    ${Object.entries(analytics.product_clicks).map(([id, clicks]) => `
+                        <div class="product-click-item">
+                            <span class="product-id">Product #${id}</span>
+                            <span class="click-count">${clicks} clicks</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}
