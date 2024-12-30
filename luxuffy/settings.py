@@ -207,7 +207,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
 ]
-
+# U2B8z5sp48k@ bitnami pwd
 # PostgREST settings
 POSTGREST_URL = 'http://your_postgrest_url:your_postgrest_port'
 POSTGREST_JWT_SECRET = 'your_postgrest_jwt_secret'
