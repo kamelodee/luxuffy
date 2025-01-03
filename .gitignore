@@ -1,0 +1,66 @@
+# Python and Django specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+myenv/
+venv/
+env/
+.env
+.venv
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Static and Media Files
+/static/
+/media/
+
+# Secret Keys and Sensitive Information
+*.key
+.env.*
+secrets.json
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Testing and Coverage
+.tox/
+.coverage
+.coverage.*
+.cache
+htmlcov/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Deployment and Logs
+*.pid
+*.sock
