@@ -48,7 +48,7 @@ class Product(models.Model):
 
     # Basic Information
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(unique=True, null=True, blank=True)  # Initially allow null
+     # Initially allow null
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
