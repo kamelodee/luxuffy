@@ -11,6 +11,8 @@ env/
 .env
 .venv
 .myenv
+# L/lZRewMdrl4
+# psql -h localhost -U admin -d luxuffy_db
 
 # Django
 *.log

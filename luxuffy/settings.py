@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-^_$mch)55lygk9m-fafaf&*a--duj3rtk4*4v!hfnk60gj6w_p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['18.133.18.80']
 
 # URL Configuration
 APPEND_SLASH = True
@@ -124,7 +124,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME':  'luxuffy_db',
         'USER': 'admin',
-        'PASSWORD': 'admin',
+        'PASSWORD': 'System@19931993',
         'HOST': 'localhost',  # Use localhost for local development
         'PORT': '5432',
         'OPTIONS': {
