@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import Brand, Tag, Product, ProductVariant, ProductImage, ProductSpecification
 
-# Registering the Brand model to the Django admin
+
+
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')

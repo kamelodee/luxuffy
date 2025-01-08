@@ -130,7 +130,7 @@ urlpatterns = [
     # API Endpoints
     path('api/products/', include('products.api_urls')),
     path('api/categories/', include('categories.api_urls')),
-    path('api/accounts/', include('accounts.urls')),
+    path('', include('accounts.urls')),
     path('api/cart/', include('cart.api_urls')),
     path('api/orders/', include('orders.api_urls')),
     path('api/payments/', include('payments.api_urls')),
