@@ -124,7 +124,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME':  'luxuffy_db',
         'USER': 'admin',
-        'PASSWORD': 'System@19931993',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',  # Use localhost for local development
         'PORT': '5432',
         'OPTIONS': {

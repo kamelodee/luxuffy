@@ -9,9 +9,9 @@ class VendorAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at', 'verification_date')
     fields = (
         'user', 'business_name', 'business_type', 'store_name', 
-        'logo', 'banner', 
+        'logo_url', 'banner_url', 
         'phone_number', 'address_line1', 'address_line2', 
-        'city', 'state', 'country', 'postal_code', 
+        'city', 'region', 'country', 'postal_code', 
         'verification_status', 'verification_date', 'verification_notes',
         'account_status','meta_title','meta_description','meta_keywords','canonical_url',
         'created_at', 'updated_at'
