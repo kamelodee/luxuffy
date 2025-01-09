@@ -125,7 +125,7 @@ DATABASES = {
         'NAME':  'luxuffy_db',
         'USER': 'admin',
         'PASSWORD': 'admin',
-        'HOST': 'localhost',  # Use localhost for local development
+        'HOST': 'System@19931993',  # Use localhost for local development
         'PORT': '5432',
         'OPTIONS': {
             'client_encoding': 'UTF8',
