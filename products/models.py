@@ -122,8 +122,7 @@ class Product(models.Model):
         return self.images.filter(is_primary=True).first()
 
     def save(self, *args, **kwargs):
-        if not self.uuid:
-            self.uuid = uuid.uuid4()
+       
         if not self.slug:
             self.slug = slugify(self.name)
             # Make slug unique

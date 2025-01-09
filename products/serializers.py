@@ -86,7 +86,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     def get_primary_image_url(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
         if primary_image:
-            return primary_image.image_url
+            return primary_image.image.url
         return None
 
 class ProductDetailSerializer(serializers.ModelSerializer):
