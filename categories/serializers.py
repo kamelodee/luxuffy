@@ -12,6 +12,13 @@ class CategoryListSerializer(serializers.ModelSerializer):
     def get_product_count(self, obj):
         return obj.products.count()
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        if request:
+            representation['image'] = request.build_absolute_uri(instance.image.url)
+        return representation
+
 class CategoryDetailSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     parent_details = serializers.SerializerMethodField()
@@ -42,6 +49,13 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     def get_product_count(self, obj):
         return obj.products.count()
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        if request:
+            representation['image'] = request.build_absolute_uri(instance.image.url)
+        return representation
 
 class CategoryCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
